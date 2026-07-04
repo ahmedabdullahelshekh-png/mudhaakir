@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -34,6 +34,171 @@
         <span class="nav-icon">◎</span>
         <span class="nav-label">الرئيسية</span>
       </button>
+      <button class="nav-item" data-view="subjects" onclick="App.navigate('subjects')">
+        <span class="nav-icon">≡</span>
+        <span class="nav-label">موادي</span>
+      </button>
+      <button class="nav-item nav-center" data-view="add" onclick="App.openAddModal()">
+        <span class="nav-icon-add">+</span>
+      </button>
+      <button class="nav-item" data-view="flashcards" onclick="App.navigate('flashcards')">
+        <span class="nav-icon">⬡</span>
+        <span class="nav-label">البطاقات</span>
+      </button>
+      <button class="nav-item" data-view="stats" onclick="App.navigate('stats')">
+        <span class="nav-icon">◈</span>
+        <span class="nav-label">التقدم</span>
+      </button>
+    </nav>
+
+    <!-- Views -->
+    <main class="main-content">
+
+      <!-- DASHBOARD -->
+      <div id="view-dashboard" class="view active">
+        <header class="view-header">
+          <div>
+            <h2 class="view-title">مُذاكِر</h2>
+            <p class="view-subtitle">Spaced Repetition</p>
+          </div>
+          <div class="streak-badge" id="streak-badge">
+            <span id="streak-count">0</span>
+            <span class="streak-fire">🔥</span>
+          </div>
+        </header>
+
+        <!-- Today's Sessions -->
+        <section class="section">
+          <h3 class="section-title">جلسات اليوم</h3>
+          <div id="today-sessions" class="sessions-list">
+            <div class="empty-state">
+              <span class="empty-icon">◎</span>
+              <p>لا توجد جلسات اليوم</p>
+              <button class="btn-ghost" onclick="App.openAddModal()">أضف موضوعاً جديداً</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Upcoming -->
+        <section class="section">
+          <h3 class="section-title">قادمة قريباً</h3>
+          <div id="upcoming-sessions" class="upcoming-list"></div>
+        </section>
+      </div>
+
+      <!-- SUBJECTS -->
+      <div id="view-subjects" class="view">
+        <header class="view-header">
+          <h2 class="view-title">موادي</h2>
+          <button class="btn-icon" onclick="App.openAddModal()">+</button>
+        </header>
+        <div id="subjects-list" class="subjects-grid"></div>
+      </div>
+
+      <!-- FLASHCARDS -->
+      <div id="view-flashcards" class="view">
+        <header class="view-header">
+          <h2 class="view-title">البطاقات</h2>
+          <button class="btn-icon" onclick="App.openAddCardModal()">+</button>
+        </header>
+        <div id="flashcard-subject-filter" class="filter-pills"></div>
+        <div id="flashcard-session" class="flashcard-area"></div>
+      </div>
+
+      <!-- STATS -->
+      <div id="view-stats" class="view">
+        <header class="view-header">
+          <h2 class="view-title">التقدم</h2>
+        </header>
+        <div id="stats-content" class="stats-grid"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL: Add Subject/Topic -->
+  <div id="modal-add" class="modal-overlay hidden" onclick="App.closeModal(event)">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <h3 class="modal-title">موضوع جديد</h3>
+
+      <div class="form-group">
+        <label class="form-label">اسم الموضوع</label>
+        <input type="text" id="input-topic" class="form-input" placeholder="مثال: هرمونات الغدة الدرقية" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">المادة</label>
+        <select id="input-subject" class="form-input">
+          <option value="">— اختر مادة أو أضف جديدة —</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="new-subject-group" style="display:none">
+        <label class="form-label">اسم المادة الجديدة</label>
+        <input type="text" id="input-new-subject" class="form-input" placeholder="مثال: الكيمياء السريرية" />
+        <div class="color-picker" id="subject-color-picker"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">وقت الدراسة</label>
+        <input type="datetime-local" id="input-study-time" class="form-input" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ملاحظات (اختياري)</label>
+        <textarea id="input-notes" class="form-input form-textarea" placeholder="أي ملاحظات عن الموضوع..."></textarea>
+      </div>
+
+      <button class="btn-primary btn-full" onclick="App.saveNewTopic()">حفظ وضبط جدول الاسترجاع</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Flashcard -->
+  <div id="modal-add-card" class="modal-overlay hidden" onclick="App.closeCardModal(event)">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <h3 class="modal-title">بطاقة جديدة</h3>
+
+      <div class="form-group">
+        <label class="form-label">الموضوع</label>
+        <select id="card-topic-select" class="form-input"></select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">السؤال</label>
+        <textarea id="card-question" class="form-input form-textarea" placeholder="ما هو...؟"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">الإجابة</label>
+        <textarea id="card-answer" class="form-input form-textarea" placeholder="الإجابة..."></textarea>
+      </div>
+
+      <button class="btn-primary btn-full" onclick="App.saveNewCard()">حفظ البطاقة</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Session Review -->
+  <div id="modal-session" class="modal-overlay hidden">
+    <div class="modal-sheet modal-full">
+      <div class="modal-handle"></div>
+      <div id="session-content"></div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION PERMISSION BANNER -->
+  <div id="notif-banner" class="notif-banner hidden">
+    <span>فعّل الإشعارات لتذكيرات الاسترجاع</span>
+    <button onclick="App.requestNotifications()">تفعيل</button>
+    <button class="btn-dismiss" onclick="document.getElementById('notif-banner').classList.add('hidden')">×</button>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="notifications.js"></script>
+  <script src="sw-register.js"></script>
+</body>
+</html>
       <button class="nav-item" data-view="subjects" onclick="App.navigate('subjects')">
         <span class="nav-icon">≡</span>
         <span class="nav-label">موادي</span>
