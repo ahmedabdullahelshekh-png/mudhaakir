@@ -1,0 +1,36 @@
+{
+  "name": "مُذاكِر — Spaced Repetition",
+  "short_name": "مُذاكِر",
+  "description": "نظام الاسترجاع المتباعد الذكي",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1117",
+  "theme_color": "#0f1117",
+  "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "إضافة موضوع",
+      "short_name": "إضافة",
+      "url": "/?action=add",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
